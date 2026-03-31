@@ -92,6 +92,18 @@ The gap isn't that agents don't work. The gap is between what works in a demo an
 
 ---
 
+## A Distinction Worth Making: Bounded vs. Unbounded Agents
+
+A useful distinction the field hasn't settled on yet: bounded vs. unbounded agentic systems.
+
+An unbounded agent has an open-ended action space — it decides what to do next at every step, from an unrestricted set of options. That's what ReAct loops implement. It's also what makes them hard to test, audit, and trust in production.
+
+A bounded agentic system takes a high-level goal and autonomously executes a constrained, deterministic workflow to achieve it — coordinating tools and systems the user never touches directly. The sequence is fixed. The decisions within the sequence are rule-based. The LLM synthesizes the output.
+
+The second definition still qualifies as agency. It just qualifies as the kind that ships.
+
+---
+
 ## Where I've Landed — For Now
 
 The architecture I keep returning to: deterministic orchestration layer owns the flow, LLM owns the prose. Graph controls decisions, model generates interpretation. That's not less agentic — it's production-grade agentic. And in my experience, it's a far better conversation to have with a risk or compliance team than "trust the model."
