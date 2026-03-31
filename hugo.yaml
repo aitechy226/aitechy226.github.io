@@ -93,6 +93,10 @@ menu:
       name: Search
       url: /search/
       weight: 40
+    - identifier: sri-system
+      name: Sri System
+      url: /sri-system/
+      weight: 50
 
 outputs:
   home:
