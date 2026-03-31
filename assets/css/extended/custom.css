@@ -1,77 +1,77 @@
-/* ── Electric blue / dark slate palette ──────────────────────── */
+/* ── Navy + electric teal palette ────────────────────────────── */
 :root {
-    --blue:       #2563eb;
-    --blue-hover: #3b82f6;
-    --blue-pale:  #dbeafe;
-    --blue-tag-bg:#eff6ff;
+    --teal:       #0d9488;
+    --teal-hover: #14b8a6;
+    --teal-pale:  #ccfbf1;
+    --teal-tag-bg:#f0fdfa;
 }
 
 .dark {
-    --blue:       #60a5fa;
-    --blue-hover: #93c5fd;
-    --blue-pale:  #1e3a5f;
-    --blue-tag-bg:#0f2040;
-    --theme:      #0f172a;
-    --entry:      #1e293b;
+    --teal:       #2dd4bf;
+    --teal-hover: #5eead4;
+    --teal-pale:  #134e4a;
+    --teal-tag-bg:#042f2e;
+    --theme:      #0a0f1e;
+    --entry:      #111827;
     --primary:    #e2e8f0;
     --secondary:  #94a3b8;
-    --tertiary:   #273549;
+    --tertiary:   #1a2438;
     --content:    #cbd5e1;
-    --hljs-bg:    #273549;
-    --code-bg:    #273549;
-    --border:     #334155;
+    --hljs-bg:    #1a2438;
+    --code-bg:    #1a2438;
+    --border:     #1e3a5f;
 }
 
 /* ── Links ────────────────────────────────────────────────────── */
 a {
-    color: var(--blue);
+    color: var(--teal);
 }
 a:hover {
-    color: var(--blue-hover);
+    color: var(--teal-hover);
 }
 
 /* ── Nav hover ────────────────────────────────────────────────── */
 .nav a:hover,
 .logo a:hover {
-    color: var(--blue) !important;
+    color: var(--teal) !important;
 }
 
 /* ── Active menu item ─────────────────────────────────────────── */
 .menu .active {
-    border-bottom: 2px solid var(--blue);
-    color: var(--blue) !important;
+    border-bottom: 2px solid var(--teal);
+    color: var(--teal) !important;
 }
 
 /* ── Post list title hover ────────────────────────────────────── */
 .entry-header h2 a:hover {
-    color: var(--blue) !important;
+    color: var(--teal) !important;
 }
 
 /* ── Tags ─────────────────────────────────────────────────────── */
 .post-tags a {
-    border: 1px solid var(--blue) !important;
-    color: var(--blue) !important;
-    background: var(--blue-tag-bg) !important;
+    border: 1px solid var(--teal) !important;
+    color: var(--teal) !important;
+    background: var(--teal-tag-bg) !important;
 }
 .post-tags a:hover {
-    background: var(--blue) !important;
+    background: var(--teal) !important;
     color: #fff !important;
 }
 
 /* ── Post content headings ────────────────────────────────────── */
 .post-content h2 {
-    color: var(--blue);
+    color: var(--teal);
 }
 
 /* ── Dividers ─────────────────────────────────────────────────── */
 hr {
-    border-color: var(--blue-pale);
+    border-color: var(--teal-pale);
     opacity: 0.6;
 }
 
 /* ── Inline code ──────────────────────────────────────────────── */
 .post-content code {
-    color: var(--blue);
+    color: var(--teal);
 }
 
 /* ── Base ─────────────────────────────────────────────────────── */
