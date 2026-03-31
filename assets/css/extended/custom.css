@@ -1,0 +1,67 @@
+/* ── Base ─────────────────────────────────────────────────────── */
+body {
+    font-size: 15px !important;
+    line-height: 1.7;
+}
+
+/* ── Homepage heading ─────────────────────────────────────────── */
+.first-entry .entry-header h1 {
+    font-size: 22px !important;
+}
+
+.first-entry .entry-content {
+    font-size: 14px !important;
+}
+
+.first-entry .entry-footer {
+    font-size: 12px !important;
+}
+
+/* ── Page / section headers ───────────────────────────────────── */
+.page-header h1 {
+    font-size: 22px !important;
+}
+
+/* ── Single post ──────────────────────────────────────────────── */
+.post-title {
+    font-size: 24px !important;
+}
+
+.post-meta,
+.breadcrumbs {
+    font-size: 12px !important;
+}
+
+.breadcrumbs a {
+    font-size: 12px !important;
+}
+
+/* ── Post content headings ────────────────────────────────────── */
+.post-content h1 {
+    font-size: 22px !important;
+}
+
+.post-content h2 {
+    font-size: 19px !important;
+}
+
+.post-content h3 {
+    font-size: 17px !important;
+}
+
+.post-content h4 {
+    font-size: 15px !important;
+}
+
+.post-content h5 {
+    font-size: 13px !important;
+}
+
+.post-content h6 {
+    font-size: 12px !important;
+}
+
+/* ── Post list entry ──────────────────────────────────────────── */
+.entry-header h2 {
+    font-size: 18px !important;
+}
