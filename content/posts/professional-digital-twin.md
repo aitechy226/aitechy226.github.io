@@ -1,7 +1,7 @@
 ---
-title: "I Built a Digital Twin of Myself. Here's the Architecture."
+title: "Designing a Professional Digital Twin: The Architecture"
 date: 2026-03-31
-description: "Most professional knowledge lives in people's heads. I made mine explicit, structured, and executable — modeled on the same agentic AI architecture I build in production."
+description: "Most professional knowledge lives in people's heads. Here's what it looks like when you structure it as an agentic system — personas, tools, skills, rules, and memory."
 tags: ["agents", "agentic-ai", "architecture", "digital-twin", "professional-systems"]
 author: "Srikanth Samudrla"
 showToc: true
@@ -9,11 +9,11 @@ TocOpen: false
 draft: false
 ---
 
-*Most professional knowledge lives in people's heads. I made mine explicit, structured, and executable.*
+*Most professional knowledge lives in people's heads. Here's what it looks like when you make it explicit.*
 
 Over the last year, I've been building production agentic AI systems — LangGraph state machines, multi-agent orchestration, deterministic validation pipelines for regulated environments. And somewhere in that work, I noticed something: the architecture I was using to build reliable AI agents was a pretty accurate model of how I actually operate professionally.
 
-So I built it out. Not as a second brain or a structured resume. As an agent specification.
+So I mapped it out. Not as a second brain or a structured resume. As an agent specification — a design exercise in making professional expertise explicit, structured, and transferable.
 
 ---
 
@@ -87,7 +87,7 @@ These aren't lessons — they're load-bearing convictions. They're why the rules
 
 ---
 
-## Why This Is Worth Building
+## Why This Is Worth Doing
 
 I structured this as a Claude Code project because it has two distinct uses.
 
