@@ -7,6 +7,7 @@ author: "Srikanth Samudrla"
 showToc: true
 TocOpen: false
 draft: false
+weight: 1
 ---
 
 *Most professional knowledge lives in people's heads. Here's what it looks like when you make it explicit.*
