@@ -15,7 +15,7 @@ I've spent the last several months building agentic AI systems — not demoing t
 
 The hype is real. The gap is also real. And the gap is closing — but not in the way most people think.
 
-*This reflects where I am in March 2026, building on roughly 18 months of production agentic work. The field is moving fast and I expect some of this to age.*
+*This reflects where I am in March 2026, building on roughly 18 months of hands-on agentic work. The field is moving fast and I expect some of this to age.*
 
 ---
 

@@ -45,7 +45,7 @@ params:
   homeInfoParams:
     Title: "Srikanth Samudrla"
     Content: >
-      **The Practical AI Builder** — Field notes from building AI systems that actually work in production.
+      **The Practical AI Builder** — Field notes on designing AI systems to production-grade standards.
       Agentic architecture, infrastructure tooling, and the gap between demos and deployment.
 
   socialIcons:

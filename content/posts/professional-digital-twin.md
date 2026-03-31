@@ -12,7 +12,7 @@ weight: 1
 
 *Most professional knowledge lives in people's heads. Here's what it looks like when you make it explicit.*
 
-Over the last year, I've been building production agentic AI systems — LangGraph state machines, multi-agent orchestration, deterministic validation pipelines for regulated environments. And somewhere in that work, I noticed something: the architecture I was using to build reliable AI agents was a pretty accurate model of how I actually operate professionally.
+Over the last year, I've been building production-grade agentic AI systems — LangGraph state machines, multi-agent orchestration, deterministic validation pipelines designed for regulated environments. And somewhere in that work, I noticed something: the architecture I was using to build reliable AI agents was a pretty accurate model of how I actually operate professionally.
 
 So I mapped it out. Not as a second brain or a structured resume. As an agent specification — a design exercise in making professional expertise explicit, structured, and transferable.
 
@@ -108,4 +108,4 @@ It's living documentation. It gets updated when a new engagement changes how I t
 
 ---
 
-*I build production AI systems for regulated industries. If any of this connects with work you're doing, the best place to reach me is [LinkedIn](https://www.linkedin.com/in/srikanthsamudrla/).*
+*I design production-grade AI systems for regulated industries. If any of this connects with work you're doing, the best place to reach me is [LinkedIn](https://www.linkedin.com/in/srikanthsamudrla/).*
