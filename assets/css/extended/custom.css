@@ -1,3 +1,79 @@
+/* ── Emerald palette ──────────────────────────────────────────── */
+:root {
+    --emerald:       #059669;
+    --emerald-hover: #10b981;
+    --emerald-pale:  #d1fae5;
+    --emerald-tag-bg:#ecfdf5;
+}
+
+.dark {
+    --emerald:       #34d399;
+    --emerald-hover: #6ee7b7;
+    --emerald-pale:  #064e3b;
+    --emerald-tag-bg:#052e16;
+    --theme:         #0d1117;
+    --entry:         #161b27;
+    --primary:       #e2e8f0;
+    --secondary:     #94a3b8;
+    --tertiary:      #1e2535;
+    --content:       #cbd5e1;
+    --hljs-bg:       #1e2535;
+    --code-bg:       #1e2535;
+    --border:        #2d3748;
+}
+
+/* ── Links ────────────────────────────────────────────────────── */
+a {
+    color: var(--emerald);
+}
+a:hover {
+    color: var(--emerald-hover);
+}
+
+/* ── Nav hover ────────────────────────────────────────────────── */
+.nav a:hover,
+.logo a:hover {
+    color: var(--emerald) !important;
+}
+
+/* ── Active menu item ─────────────────────────────────────────── */
+.menu .active {
+    border-bottom: 2px solid var(--emerald);
+    color: var(--emerald) !important;
+}
+
+/* ── Post list title hover ────────────────────────────────────── */
+.entry-header h2 a:hover {
+    color: var(--emerald) !important;
+}
+
+/* ── Tags ─────────────────────────────────────────────────────── */
+.post-tags a {
+    border: 1px solid var(--emerald) !important;
+    color: var(--emerald) !important;
+    background: var(--emerald-tag-bg) !important;
+}
+.post-tags a:hover {
+    background: var(--emerald) !important;
+    color: #fff !important;
+}
+
+/* ── Post content headings ────────────────────────────────────── */
+.post-content h2 {
+    color: var(--emerald);
+}
+
+/* ── Dividers ─────────────────────────────────────────────────── */
+hr {
+    border-color: var(--emerald-pale);
+    opacity: 0.6;
+}
+
+/* ── Inline code ──────────────────────────────────────────────── */
+.post-content code {
+    color: var(--emerald);
+}
+
 /* ── Base ─────────────────────────────────────────────────────── */
 body {
     font-size: 15px !important;
