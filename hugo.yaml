@@ -17,7 +17,7 @@ params:
   env: production
   title: "The Practical AI Builder"
   description: "Field notes on building AI systems that actually work in production."
-  author: "Srikanth Samudrala"
+  author: "Srikanth Samudrla"
   defaultTheme: auto
   disableThemeToggle: false
   ShowReadingTime: true
@@ -47,13 +47,13 @@ params:
     Content: >
       Field notes from building AI systems that actually work in production.
       Agentic architecture, infrastructure tooling, and the gap between demos and deployment.
-      — Srikanth Samudrala, Field CTO / Solutions Architect
+      — Srikanth Samudrla, Field CTO / Solutions Architect
 
   socialIcons:
     - name: github
       url: "https://github.com/aitechy226"
     - name: linkedin
-      url: "https://linkedin.com/in/srikanth-samudrala"
+      url: "https://www.linkedin.com/in/srikanthsamudrla/"
 
   cover:
     hidden: true

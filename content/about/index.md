@@ -5,7 +5,7 @@ url: "/about/"
 summary: "About The Practical AI Builder"
 ---
 
-I'm Srikanth Samudrala — Field CTO and Solutions Architect specializing in AI infrastructure and enterprise agentic systems.
+I'm Srikanth Samudrla — Field CTO and Solutions Architect specializing in AI infrastructure and enterprise agentic systems.
 
 This blog is where I write about what I'm actually building — not what I'm demoing. The gap between those two things is larger than most people admit, and I think that gap is worth writing about honestly.
 
@@ -22,4 +22,4 @@ I'm not trying to be the most authoritative voice on any of this. I'm trying to 
 
 **Connect:**
 - [GitHub](https://github.com/aitechy226)
-- [LinkedIn](https://linkedin.com/in/srikanth-samudrala)
+- [LinkedIn](https://www.linkedin.com/in/srikanthsamudrla/)

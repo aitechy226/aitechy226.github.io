@@ -3,7 +3,7 @@ title: "Why Your AI Agent Demo Looks Great and Your Production System Doesn't"
 date: 2026-03-31
 description: "A practitioner's take on the gap between agentic hype and agentic reality."
 tags: ["agents", "agentic-ai", "production", "architecture", "llm", "langgraph"]
-author: "Srikanth Samudrala"
+author: "Srikanth Samudrla"
 showToc: true
 TocOpen: false
 draft: false

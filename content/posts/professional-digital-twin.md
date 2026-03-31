@@ -3,7 +3,7 @@ title: "I Built a Digital Twin of Myself. Here's the Architecture."
 date: 2026-03-31
 description: "Most professional knowledge lives in people's heads. I made mine explicit, structured, and executable — modeled on the same agentic AI architecture I build in production."
 tags: ["agents", "agentic-ai", "architecture", "digital-twin", "professional-systems"]
-author: "Srikanth Samudrala"
+author: "Srikanth Samudrla"
 showToc: true
 TocOpen: false
 draft: false
@@ -107,4 +107,4 @@ It's living documentation. It gets updated when a new engagement changes how I t
 
 ---
 
-*I build production AI systems for regulated industries. If any of this connects with work you're doing, the best place to reach me is [LinkedIn](https://linkedin.com/in/srikanth-samudrala).*
+*I build production AI systems for regulated industries. If any of this connects with work you're doing, the best place to reach me is [LinkedIn](https://www.linkedin.com/in/srikanthsamudrla/).*
