@@ -16,5 +16,4 @@ This blog is where I write about what I'm actually building — not what I'm dem
 - Practitioner observations — field notes from sitting across the table from the teams responsible for deploying this stuff
 
 **Connect:**
-- [GitHub](https://github.com/aitechy226)
 - [LinkedIn](https://www.linkedin.com/in/srikanthsamudrla/)

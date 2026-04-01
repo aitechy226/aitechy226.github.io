@@ -49,8 +49,6 @@ params:
       Agentic architecture, infrastructure tooling, and the gap between demos and deployment.
 
   socialIcons:
-    - name: github
-      url: "https://github.com/aitechy226"
     - name: linkedin
       url: "https://www.linkedin.com/in/srikanthsamudrla/"
 
@@ -59,10 +57,6 @@ params:
     hiddenInList: true
     hiddenInSingle: true
 
-  editPost:
-    URL: "https://github.com/aitechy226/aitechy226.github.io/tree/main/content"
-    Text: "Suggest Changes"
-    appendFilePath: true
 
   fuseOpts:
     isCaseSensitive: false
