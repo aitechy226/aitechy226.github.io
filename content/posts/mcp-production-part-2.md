@@ -9,6 +9,11 @@ TocOpen: false
 draft: false
 ---
 
+<div class="series-banner">
+  <span class="series-label">MCP in Production &middot; Part 2 of 2</span>
+  <span class="series-links"><a href="/posts/mcp-production-part-1/">← Part 1: Persistent Sessions, Pooling, and Fault Tolerance</a></span>
+</div>
+
 [Part 1](/posts/mcp-production-part-1/) covered the transport layer — keeping sessions alive, recovering from failures, and a few edge cases that only surface when you're running a real pool under real failure conditions. This part covers what I'd call system readiness: the things that separate a working prototype from something I could hand to a client and say "deploy this."
 
 ---

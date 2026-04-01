@@ -70,6 +70,10 @@ params:
 
 menu:
   main:
+    - identifier: start
+      name: Start Here
+      url: /start/
+      weight: 5
     - identifier: posts
       name: Posts
       url: /posts/

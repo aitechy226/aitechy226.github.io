@@ -74,6 +74,37 @@ hr {
     color: var(--teal);
 }
 
+/* ── Series banner ────────────────────────────────────────────── */
+.series-banner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 8px;
+    border: 1px solid var(--teal);
+    border-left: 4px solid var(--teal);
+    background: var(--teal-tag-bg);
+    padding: 10px 16px;
+    margin: 0 0 28px 0;
+    border-radius: 0 6px 6px 0;
+    font-size: 13px !important;
+}
+.series-banner .series-label {
+    font-weight: 600;
+    color: var(--teal);
+    letter-spacing: 0.02em;
+    text-transform: uppercase;
+    font-size: 11px !important;
+}
+.series-banner .series-links {
+    display: flex;
+    gap: 16px;
+}
+.series-banner .series-links a {
+    font-size: 13px !important;
+    font-weight: 500;
+}
+
 /* ── Callout box ──────────────────────────────────────────────── */
 .callout {
     border-left: 4px solid var(--teal);

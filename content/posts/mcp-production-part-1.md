@@ -9,6 +9,11 @@ TocOpen: false
 draft: false
 ---
 
+<div class="series-banner">
+  <span class="series-label">MCP in Production &middot; Part 1 of 2</span>
+  <span class="series-links"><a href="/posts/mcp-production-part-2/">Part 2: Authentication, Observability, and Operational Design →</a></span>
+</div>
+
 Most MCP client examples open a session, call a tool, and close the session. That pattern is fine for demos. It breaks in production in ways that aren't obvious until you're staring at a hung process or a spike in latency.
 
 This is Part 1 of a two-part series on what it takes to run an MCP client reliably. I'll cover the transport layer: sessions, pooling, dead connection recovery, timeouts, and the heartbeat. [Part 2](/posts/mcp-production-part-2/) covers the system layer: authentication, observability, and operational design.
