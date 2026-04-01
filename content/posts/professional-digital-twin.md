@@ -16,6 +16,11 @@ Over the last year, I've been building production-grade agentic AI systems — L
 
 So I mapped it out. Not as a second brain or a structured resume. As an agent specification — a design exercise in making professional expertise explicit, structured, and transferable.
 
+<div class="callout">
+<p>The full specification — personas, tools, skills, rules, and memory — is published alongside this post: <a href="/sri-system/">The Sri System →</a><br>
+It's living documentation, updated when a new engagement changes how I think about something.</p>
+</div>
+
 ---
 
 ## What Most "Digital Twin" Attempts Get Wrong
@@ -97,14 +102,6 @@ The first is AI agent onboarding. I can give an AI agent this system as context 
 The second is human onboarding. A new colleague, a client, a collaborator — they can read this and understand how I operate, what to expect, and why I make the decisions I make. Most professionals keep this in their heads. Making it explicit, structured, and legible is the difference between institutional knowledge and institutional knowledge that actually transfers.
 
 Most people have this system. Very few have made it explicit enough to be useful to anyone else.
-
----
-
-## The System
-
-The full specification — personas, tools, skills, rules, and memory — is published here: [The Sri System →](/sri-system/)
-
-It's living documentation. It gets updated when a new engagement changes how I think about something.
 
 ---
 
