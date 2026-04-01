@@ -72,7 +72,7 @@ menu:
   main:
     - identifier: start
       name: Start Here
-      url: /start/
+      url: /
       weight: 5
     - identifier: posts
       name: Posts
