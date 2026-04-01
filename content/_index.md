@@ -1,11 +1,7 @@
 ---
-title: "Start Here"
-description: "A map of the writing on this site — where to start and how the pieces connect."
+title: ""
 ---
 
-This site is about building AI systems that actually work in production — not demos. Here's a map of the writing and how the pieces connect.
-
----
 
 ## On Agentic Architecture
 
