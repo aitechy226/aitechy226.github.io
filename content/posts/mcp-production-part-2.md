@@ -1,7 +1,7 @@
 ---
 title: "MCP in Production, Part 2: Authentication, Observability, and Operational Design"
 date: 2026-04-01
-description: "Part 2 covers everything that separates a working prototype from something you can actually deploy: authentication, traceability across servers, and the operational design decisions that make the system self-contained."
+description: "Bearer token auth at the transport layer, correlation IDs across four servers, lazy session init, and clean shutdown — the system-level decisions that make an MCP client deployable."
 tags: ["mcp", "production", "architecture", "langgraph", "kyc", "agentic-ai"]
 author: "Srikanth Samudrla"
 showToc: true

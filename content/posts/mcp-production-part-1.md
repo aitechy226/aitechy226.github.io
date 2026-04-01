@@ -1,7 +1,7 @@
 ---
 title: "MCP in Production, Part 1: Persistent Sessions, Pooling, and Fault Tolerance"
 date: 2026-04-01
-description: "Most MCP client examples open a session, call a tool, and close the session. That pattern breaks in production. Part 1 covers the transport layer: sessions, pooling, dead connection recovery, timeouts, and the heartbeat."
+description: "Five transport-layer decisions — session pooling, eviction, cancel scope isolation, timeouts, and heartbeat design — each driven by a real failure in a KYC onboarding system."
 tags: ["mcp", "production", "architecture", "langgraph", "kyc", "agentic-ai"]
 author: "Srikanth Samudrla"
 showToc: true
