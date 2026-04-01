@@ -11,139 +11,94 @@ draft: false
 
 Most MCP client examples open a session, call a tool, and close the session. That pattern is fine for demos. It breaks in production in ways that aren't obvious until you're staring at a hung process or a spike in latency.
 
-This is Part 1 of a two-part series on what it takes to run an MCP client reliably. Part 1 covers the transport layer: sessions, pooling, dead connection recovery, timeouts, and the heartbeat. [Part 2](/posts/mcp-production-part-2/) covers the system layer: authentication, observability, and operational design.
+This is Part 1 of a two-part series on what it takes to run an MCP client reliably. I'll cover the transport layer: sessions, pooling, dead connection recovery, timeouts, and the heartbeat. [Part 2](/posts/mcp-production-part-2/) covers the system layer: authentication, observability, and operational design.
 
-The context is a KYC Onboarding Orchestrator that calls four MCP servers — Moody's entity data, sanctions/PEP screening, CRM, and document generation — for every onboarding case. Each case makes 8–10 tool calls. Every design decision below was made in response to an observed failure, not speculation.
+The context is a KYC Onboarding Orchestrator I built that calls four MCP servers — Moody's entity data, sanctions/PEP screening, CRM, and document generation — for every onboarding case. Each case makes 8–10 tool calls. Every decision below was made in response to something that actually broke.
 
 ---
 
 ## Per-Call Connections Don't Scale
 
-The naive design opens a fresh session per tool call: TCP connect → MCP `initialize` → `tools/call` → close. Simple, stateless, no shared state to manage.
+I started with the naive design: open a fresh session per tool call, run the tool, close the session. Simple, stateless, nothing to manage.
 
-The problem: every call pays full session establishment cost. Inside a Docker network that's a few milliseconds. Against a real Moody's or Refinitiv endpoint over the internet, it's 3–4 RTTs of latency on every single call, multiplied across 8–10 calls per case. There is also a server-side cost — every `initialize` allocates session state that is immediately discarded. This is not a demo-to-production scaling issue. It's just wasteful.
+The problem: every call pays full session establishment cost — TCP connect, MCP `initialize` handshake, then the actual tool call. Inside a Docker network that's a few milliseconds. Against a real Moody's or Refinitiv endpoint over the internet, it's 3–4 RTTs of latency on every single call, multiplied across 8–10 calls per case. There's also a server-side cost — every `initialize` allocates session state that is immediately discarded. I wasn't prototyping anymore, so I needed to fix this.
 
 The fix is obvious: keep sessions open and reuse them.
 
 ---
 
-## Design Decision 1: A Pool, Not a Single Session
+## Decision 1: A Pool, Not a Single Session
 
-A single persistent session per server fixes the overhead problem but creates a new one: that one session becomes a single point of failure. If it dies, every in-flight caller blocks until the dead session is detected and replaced.
+My first instinct was one persistent session per server. That fixes the overhead problem but creates a new one: the session becomes a single point of failure. If it dies while a tool call is in flight, everything blocks until the dead session is detected and replaced.
 
-A pool tolerates one dead session without impacting callers on other sessions. The registry reflects this:
+A pool tolerates one dead session without impacting callers on other sessions. I went with a pool of two per server — enough to survive one failure without blocking, without flooding a small server with idle connections.
 
-```python
-_sessions: dict[str, list[ClientSession]] = {}
-_stacks:   dict[str, list[AsyncExitStack]] = {}
-_rr_index: dict[str, int] = {}   # round-robin counter per server
-```
+One design detail I'm glad I got right upfront: the pool fill uses a partial-failure policy. If the server is reachable but only opens one session successfully, the caller gets that one session and proceeds. A pool of one is still a pool. Failing hard when you could degrade gracefully is the wrong call.
 
-The pool is filled on first use, up to `MCP_POOL_SIZE` (default 2). One design decision worth calling out: the fill loop uses a partial-failure policy. If the server is reachable but only opens one session successfully, `_get_session` returns that one session rather than failing hard. A pool of one is still a pool — the caller gets a session and can proceed.
-
-Round-robin selection spreads load across sessions and means a dead session will be discovered within at most `pool_size` calls, not after an arbitrary delay.
+Round-robin selection across the pool also means a dead session gets discovered within at most two calls — not after some arbitrary delay.
 
 ---
 
-## Design Decision 2: Evict the Session, Not the Server
+## Decision 2: Evict the Session, Not the Server
 
-When a server restarts, the pool holds stale `ClientSession` objects pointing at dead TCP connections. The next call fails. The correct response is to evict the specific dead session, not the entire pool entry.
+When a server restarts, the pool holds stale session objects pointing at dead TCP connections. The next call fails. My first implementation evicted the entire pool entry for that server — which worked fine with one session, but caused a problem under a pool.
 
-This matters because two sessions to the same server can die simultaneously. If eviction removed the whole server entry, the second eviction would find nothing to remove and potentially open duplicate sessions. Instead, `_evict_session` takes the specific session as an argument and uses a `ValueError` guard — the second caller sees the session already removed and returns cleanly.
+If two sessions to the same server die simultaneously, two concurrent callers both try to evict. If eviction removes the whole server entry, the second caller finds nothing and may open duplicate sessions. The correct fix is to evict the specific dead session and guard against the second caller — if the session is already gone by the time the second caller tries, just return cleanly.
 
-One non-obvious requirement: `stack.aclose()` must catch both `Exception` and `asyncio.CancelledError`:
-
-```python
-try:
-    await stack.aclose()
-except (Exception, asyncio.CancelledError) as exc:
-    log.warning("Error closing stale session for %s: %s", server_url, exc)
-```
-
-`asyncio.CancelledError` is a `BaseException`, not an `Exception`. The `streamablehttp_client` transport runs an anyio SSE receiver as a background task. When the server dies, anyio calls `task.cancel()` on the task that entered the transport context. Without the explicit `CancelledError` catch, that cancel escapes `_evict_session` and the session is never removed from the pool.
+One thing that bit me here: the transport layer fires its own cancellation when a connection dies, and `asyncio.CancelledError` is a `BaseException`, not an `Exception`. My original eviction handler caught `Exception` — which meant the cancellation escaped the handler and the session was never removed from the pool. Adding `asyncio.CancelledError` to the catch fixed it. Obvious in hindsight, not obvious when you're looking at a session that should be evicted but isn't.
 
 ---
 
-## Design Decision 3: Isolate anyio Cancel Scopes
+## Decision 3: Timeout + Exponential Backoff
 
-There is a subtler issue with anyio and asyncio that only surfaces under a pool.
+Two more failure modes I hit that needed explicit fixes:
 
-anyio cancel scopes are task-local — but when a transport dies, anyio's cancellation propagates via `asyncio.Task.cancel()` on the task that entered the transport context. If that task awaits the tool call directly, the cancel lands in its own cancel scope state and re-fires at every subsequent anyio checkpoint in the same task — even after the session has been evicted and the except block has run.
+**In-flight hang.** When `docker stop` kills a container, the network namespace stays alive but nothing is listening. A tool call in flight at that moment waits for a TCP response that will never arrive. Without a timeout, the asyncio task blocks indefinitely and the case stays stuck. A per-call timeout bounds every tool call — when it fires, the session is evicted and the retry cycle begins.
 
-With a pool of two dead sessions, this means two `cancel()` calls on one task. The second fires *inside* `_evict_session`'s exception handler, which is exactly where you don't want it.
-
-The fix: run every tool call in an isolated child task. Cancel scopes are task-local, so the dead transport's anyio state is contained in the child and cannot leak into the parent:
-
-```python
-inner = asyncio.get_event_loop().create_task(
-    _call_on_session(session, tool_name, arguments)
-)
-try:
-    return await asyncio.wait_for(asyncio.shield(inner), timeout=timeout)
-except (asyncio.TimeoutError, asyncio.CancelledError, Exception):
-    inner.cancel()
-    try:
-        await inner
-    except (asyncio.CancelledError, Exception):
-        pass
-    raise
-```
-
-`asyncio.shield(inner)` prevents `wait_for` from cancelling the inner task directly on timeout — cancellation goes through the explicit `except` block so the inner task is always awaited and never left as an orphaned coroutine. Every production tool call and every heartbeat ping goes through this wrapper.
-
----
-
-## Design Decision 4: Timeout + Exponential Backoff
-
-Two failure modes that need explicit handling:
-
-**In-flight hang.** When `docker stop` kills a container, the network namespace stays alive but nothing is listening. An in-flight tool call waits for a TCP response that will never arrive. Without a timeout, that asyncio task blocks indefinitely. `MCP_CALL_TIMEOUT_SECONDS` bounds every call. When it fires, the session is evicted and the retry cycle begins.
-
-**Thundering herd on restart.** A fixed retry delay means every failed caller wakes up at the same moment and hammers a server that just recovered. The fix is exponential backoff with jitter:
+**Thundering herd on restart.** I originally used a fixed retry delay. Under concurrency, every failed caller wakes up at exactly the same moment and hammers the recovering server simultaneously. The fix is exponential backoff with jitter:
 
 ```
 delay = min(BASE * 2^attempt + random(0, 1), MAX)
 ```
 
-The `random.uniform(0, 1)` component is the critical part — it desynchronizes callers so the recovering server sees a trickle, not a burst. Expose `RETRY_BASE_DELAY` and `RETRY_MAX_DELAY` as environment variables; never hardcode them.
+The jitter — that `random(0, 1)` — is the part that actually matters. It desynchronizes callers so the recovering server sees a trickle rather than a burst. I expose the base and max as environment variables so they can be tuned per deployment without touching code.
 
 ---
 
-## Design Decision 5: The Heartbeat Probe Must Exercise the Real Code Path
+## Decision 4: The Heartbeat Probe Must Test the Real Code Path
 
-The reactive eviction handles failures after they hit. The heartbeat detects them proactively: a background task pings every session in every pool on a fixed interval and evicts any that fail before real traffic reaches them.
+The reactive eviction handles failures after they hit. I added a background heartbeat to catch them proactively — a task that pings every session in the pool on a fixed interval and evicts any that fail before real traffic reaches them.
 
-The probe design matters more than it seems. This orchestrator does not use LLM-driven tool discovery — tools are called by name, hardcoded in the graph. `list_tools()` is never called in production. Using it as a heartbeat probe would test an operation that does not exist in the real flow and could pass even when `tools/call` is broken.
+The probe design mattered more than I expected. My first version used `list_tools()` as the ping. It seemed reasonable — if the server can respond to a discovery call, it's alive. But `list_tools()` is never called in production. My graph nodes call tools by hardcoded name. I was testing an operation that didn't exist in the real flow.
 
-Instead, each MCP server exposes a dedicated `ping` tool that returns `"pong"` immediately with no I/O. The heartbeat calls it via the exact same function (`_call_on_session_isolated`) that production tool calls use — exercising the real `tools/call` code path over the real session. If that path is broken, the session gets evicted.
+I replaced it with a dedicated `ping` tool on each server that returns `"pong"` immediately with no I/O. The heartbeat calls it through the exact same function every production tool call uses. If that path is broken, the session gets evicted. Testing the wrong path gives you false confidence.
 
-The ping must also have its own timeout (`MCP_PING_TIMEOUT_SECONDS`, default 5s). When a container is gracefully stopped, Docker keeps its network namespace alive but stops accepting connections — without a timeout, the ping hangs forever.
+The ping also needs its own timeout. When a container is gracefully stopped, Docker keeps the network namespace alive but stops accepting connections — without a timeout, the ping hangs forever. Five seconds is enough because the `ping` tool has no I/O. If a no-I/O tool takes more than 5 seconds to respond, the server has a real problem.
 
-### A Prerequisite: Non-Blocking Server Code
+### The Prerequisite I Almost Missed
 
-A heartbeat ping only works if the server can respond while another tool is in progress. FastMCP runs on uvicorn — a single-process async server. If any tool function makes a synchronous I/O call, it blocks the entire event loop. A 15-second LLM call with `anthropic.Anthropic().messages.create(...)` means the heartbeat `ping` waits 15 seconds and times out, falsely evicting a healthy session.
+A heartbeat only works if the server can respond to a ping while another tool is in progress. FastMCP runs on uvicorn — a single async event loop. If any tool function makes a synchronous I/O call, it blocks the entire loop. My document generation server originally used the synchronous Anthropic client for LLM calls. A 15-second LLM call meant the heartbeat ping waited 15 seconds and timed out, falsely evicting a healthy session.
 
-The fix is to use the async client (`AsyncAnthropic`). This is not a performance optimization — it is a correctness requirement. Any I/O in a tool function that blocks the event loop makes the heartbeat unreliable and every other concurrent request invisible to the server.
+Switching to the async Anthropic client fixed it. This isn't a performance optimization — it's a correctness requirement for any async server making I/O calls.
 
 ---
 
 ## Summary
 
-Each decision addressed a real failure mode:
+Each decision came from something that broke:
 
-| Problem | Solution |
-|---------|----------|
+| Problem | Fix |
+|---------|-----|
 | Per-call handshake overhead | Persistent session pool |
 | Single session = single point of failure | Pool with round-robin selection |
-| Dead sessions block callers | Per-session eviction, `CancelledError` catch |
-| anyio cancel scope leakage | Isolated child task per call |
+| Dead sessions block callers | Per-session eviction with `CancelledError` catch |
 | In-flight hang on server stop | Per-call timeout |
 | Thundering herd on restart | Exponential backoff with jitter |
 | Dead sessions hit before detected | Background heartbeat |
-| Heartbeat tests wrong code path | Dedicated `ping` tool via real call stack |
+| Heartbeat tests wrong code path | Dedicated `ping` tool on real call stack |
 | Blocking I/O breaks heartbeat | Async I/O in all server tool functions |
 
-[Part 2](/posts/mcp-production-part-2/) covers the system-level concerns: how PII-carrying tool calls get protected in transit, how 8–10 calls across 4 servers become traceable to a single case, and the operational design decisions that make this deployable on a client system.
+[Part 2](/posts/mcp-production-part-2/) covers the system-level concerns: protecting PII-carrying tool calls in transit, making 8–10 calls across 4 servers traceable to a single case, and the operational decisions that make this deployable on a client system.
 
 ---
 
