@@ -91,6 +91,11 @@ menu:
       url: /posts/professional-digital-twin/
       weight: 50
 
+markup:
+  goldmark:
+    renderer:
+      unsafe: true
+
 outputs:
   home:
     - HTML
