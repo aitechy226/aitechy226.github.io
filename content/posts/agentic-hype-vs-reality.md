@@ -9,8 +9,6 @@ TocOpen: false
 draft: false
 ---
 
-*A practitioner's take on the gap between agentic hype and agentic reality.*
-
 I've spent the last several months building agentic AI systems — not demoing them, building them. And I want to share something that took me longer than I'd like to admit to fully internalize.
 
 The hype is real. The gap is also real. And the gap is closing — but not in the way most people think.
