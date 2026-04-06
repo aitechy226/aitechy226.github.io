@@ -25,4 +25,12 @@ A ground-up account of using the Model Context Protocol as a service-to-service 
 
 ---
 
+## On AI PC Evaluation
+
+Why enterprise AI PC procurement is harder than vendor benchmarks suggest — and what it takes to measure the right things.
+
+- [The AI PC Buying Problem Every Enterprise Needs to Solve](/posts/benchmarking-ai-devices/) — Three user groups, one procurement decision, and why vendor metrics don't answer the question IT leaders actually need answered.
+
+---
+
 *New posts go to [/posts/](/posts/). Organized by topic as the archive grows.*
