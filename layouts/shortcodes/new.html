@@ -1,0 +1,5 @@
+{{- $postDate := time (.Get 0) -}}
+{{- $daysSince := div (sub now.Unix $postDate.Unix) 86400 -}}
+{{- if and (ge $daysSince 0) (lt $daysSince 7) -}}
+<span class="new-badge">New</span>
+{{- end -}}

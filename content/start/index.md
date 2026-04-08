@@ -13,7 +13,7 @@ This site is about building AI systems that actually work in production — not 
 
 What it takes to build a RAG system a compliance officer or clinical analyst can actually rely on — deterministic retrieval, evidence gating, and the gap between working and trustworthy.
 
-- [The Trust Layer: What Separates Good RAG from Enterprise RAG](/posts/enterprise-rag-trust-layer/) — Four bugs found while stress-testing a RAG system for regulated industries, and the architectural properties they reveal.
+- [The Trust Layer: What Separates Good RAG from Enterprise RAG](/posts/enterprise-rag-trust-layer/) {{< new "2026-04-08" >}} — Four bugs found while stress-testing a RAG system for regulated industries, and the architectural properties they reveal.
 
 ---
 
@@ -21,7 +21,7 @@ What it takes to build a RAG system a compliance officer or clinical analyst can
 
 Why enterprise AI PC procurement is harder than vendor benchmarks suggest — and what it takes to measure the right things.
 
-- [The AI PC Buying Problem Every Enterprise Needs to Solve](/posts/benchmarking-ai-devices/) — Three user groups, one procurement decision, and why vendor metrics don't answer the question IT leaders actually need answered.
+- [The AI PC Buying Problem Every Enterprise Needs to Solve](/posts/benchmarking-ai-devices/) {{< new "2026-04-05" >}} — Three user groups, one procurement decision, and why vendor metrics don't answer the question IT leaders actually need answered.
 
 ---
 
