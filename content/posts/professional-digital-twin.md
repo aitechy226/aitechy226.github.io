@@ -7,7 +7,6 @@ author: "Srikanth Samudrla"
 showToc: true
 TocOpen: false
 draft: false
-weight: 1
 ---
 
 Over the last year, I've been building production-grade agentic AI systems — LangGraph state machines, multi-agent orchestration, deterministic validation pipelines designed for regulated environments. And somewhere in that work, I noticed something: the architecture I was using to build reliable AI agents was a pretty accurate model of how I actually operate professionally.

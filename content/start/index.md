@@ -9,6 +9,14 @@ This site is about building AI systems that actually work in production — not 
 
 ---
 
+## On Enterprise RAG
+
+What it takes to build a RAG system a compliance officer or clinical analyst can actually rely on — deterministic retrieval, evidence gating, and the gap between working and trustworthy.
+
+- [The Trust Layer: What Separates Good RAG from Enterprise RAG](/posts/enterprise-rag-trust-layer/) — Four bugs found while stress-testing a RAG system for regulated industries, and the architectural properties they reveal.
+
+---
+
 ## On Agentic Architecture
 
 The foundation. What agentic systems actually look like when you move past the demo and into something deployable.
