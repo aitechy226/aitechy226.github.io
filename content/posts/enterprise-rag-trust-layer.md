@@ -6,7 +6,7 @@ tags: ["rag", "enterprise-ai", "retrieval", "grounding", "fsi", "langgraph", "pr
 author: "Srikanth Samudrla"
 showToc: true
 TocOpen: false
-draft: true
+draft: false
 ---
 
 I was stress-testing a RAG system built for regulated industries — financial services and life sciences — and I found things I'm not proud of.
