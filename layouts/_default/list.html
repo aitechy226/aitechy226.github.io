@@ -78,7 +78,7 @@
       </span>
       {{- end }}
       {{- $daysSince := div (sub now.Unix .Date.Unix) 86400 }}
-      {{- if and (ge $daysSince 0) (le $daysSince 7) }}
+      {{- if and (ge $daysSince 0) (lt $daysSince 7) }}
       <span class="entry-hint new-badge" title="New">New</span>
       {{- end }}
     </h2>
