@@ -90,6 +90,10 @@ menu:
       name: Search
       url: /search/
       weight: 40
+    - identifier: subscribe
+      name: Subscribe
+      url: https://follow.it/the-practical-ai-builder?leanpub
+      weight: 45
     - identifier: sri-system
       name: Sri System
       url: /posts/professional-digital-twin/

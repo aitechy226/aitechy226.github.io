@@ -40,3 +40,7 @@ Why enterprise AI PC procurement is harder than vendor benchmarks suggest — an
 ---
 
 *New posts go to [/posts/](/posts/). Organized by topic as the archive grows.*
+
+---
+
+[Subscribe](https://follow.it/the-practical-ai-builder?leanpub) to get new posts by email.
