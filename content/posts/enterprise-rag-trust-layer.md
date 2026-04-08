@@ -9,9 +9,9 @@ TocOpen: false
 draft: false
 ---
 
-I was stress-testing a RAG system built for regulated industries — financial services and life sciences — and I found things I'm not proud of.
+I was stress-testing a RAG system built for regulated industries — financial services and life sciences. The grounding was fine. No hallucinations. What I found were subtler failures — the kind that only surface when analysts run the same query twice, compare citations across sessions, and need to explain to a regulator exactly which document an answer came from.
 
-The issues weren't hallucinations. The grounding was fine. What I found were subtler failures — the kind that only surface when analysts run the same query twice, compare citations across sessions, and need to explain to a regulator exactly which document an answer came from.
+In regulated environments, that's the standard. And the system wasn't meeting it.
 
 ---
 
