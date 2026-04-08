@@ -17,6 +17,14 @@ What it takes to build a RAG system a compliance officer or clinical analyst can
 
 ---
 
+## On AI PC Evaluation
+
+Why enterprise AI PC procurement is harder than vendor benchmarks suggest — and what it takes to measure the right things.
+
+- [The AI PC Buying Problem Every Enterprise Needs to Solve](/posts/benchmarking-ai-devices/) — Three user groups, one procurement decision, and why vendor metrics don't answer the question IT leaders actually need answered.
+
+---
+
 ## On Agentic Architecture
 
 The foundation. What agentic systems actually look like when you move past the demo and into something deployable.
@@ -36,14 +44,6 @@ A ground-up account of using the Model Context Protocol as a service-to-service 
 - [MCP in Production, Part 1: Persistent Sessions, Pooling, and Fault Tolerance](/posts/mcp-production-part-1/) — Five transport-layer decisions, each driven by a real failure: session pooling, dead connection eviction, cancel scope isolation, timeouts, and heartbeat design.
 
 - [MCP in Production, Part 2: Authentication, Observability, and Operational Design](/posts/mcp-production-part-2/) — Bearer token auth at the transport layer, correlation IDs across four servers, lazy session init, and clean shutdown.
-
----
-
-## On AI PC Evaluation
-
-Why enterprise AI PC procurement is harder than vendor benchmarks suggest — and what it takes to measure the right things.
-
-- [The AI PC Buying Problem Every Enterprise Needs to Solve](/posts/benchmarking-ai-devices/) — Three user groups, one procurement decision, and why vendor metrics don't answer the question IT leaders actually need answered.
 
 ---
 
