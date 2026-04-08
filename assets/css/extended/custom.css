@@ -193,6 +193,7 @@ body {
 /* ── New post badge ───────────────────────────────────────────── */
 .new-badge {
     display: inline-block;
+    flex-shrink: 0;
     font-size: 10px !important;
     font-weight: 700;
     letter-spacing: 0.06em;
