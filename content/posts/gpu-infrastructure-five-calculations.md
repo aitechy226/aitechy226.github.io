@@ -152,6 +152,54 @@ What the four-row table forces is a side-by-side comparison that includes all th
 
 ---
 
+## Example: All Five Calculations on a Real Scenario
+
+**Setup**: Fine-tuning LLaMA-3 70B on a 500 GB proprietary corpus. Training mode: QLoRA. Two candidates — a bare metal H100 80GB provider at $2.80/hr and AWS SageMaker. Current data location: AWS S3.
+
+**Calculation 1 — VRAM fit**
+
+NF4-quantized base: 70B × 0.5 bytes = 35 GB. LoRA adapter + paged Adam: ~12 GB. Peak: ~47 GB. One H100 80GB clears it with 33 GB to spare. No further VRAM analysis needed.
+
+For reference: full fine-tuning on the same model (18 bytes/param × 70B = 1,260 GB aggregate) would require two eight-GPU H100 nodes under ZeRO-3 sharding — a completely different procurement.
+
+**Calculation 2 — Quantization decision**
+
+QLoRA (NF4) locks in a single-node configuration. If you later serve the trained adapter merged into the base model at BF16 for inference: 140 GB → two 80GB GPUs. That's a separate hardware decision for the serving layer.
+
+**Calculation 3 — Multi-node**
+
+47 GB peak < 80 GB node capacity. No multi-node. No InfiniBand questions to ask. No NCCL configuration. If the mode were full fine-tuning: ceil(1,260 / 80) = 16 GPUs minimum — two nodes, InfiniBand required, NCCL setup non-trivial. The quantization decision from step 2 made this a non-issue.
+
+**Calculation 4 — Egress**
+
+Training data lives in S3; bare metal provider is not AWS.
+
+- One-time data pull: 500 GB × $0.09 = **$45**
+- Per-run if re-reading from S3: $45/run
+- 20 training experiments, each pulling fresh: **$900 total**
+- Cache the dataset on the provider after the first pull: **$45 total**
+
+Whether you cache is a workflow decision that changes the egress line by $855. Write it down.
+
+**Calculation 5 — TCO**
+
+GPU-hours: (6 × 70B params × 1B training tokens × 3 epochs) ÷ 989 TFLOPS = **354 GPU-hours**
+
+| Component | Bare metal H100 | SageMaker |
+|-----------|----------------|-----------|
+| Compute | $991 (354 hr × $2.80) | $1,288 (+30%) |
+| Storage (corpus + checkpoints + artifacts) | $28/month | $28/month |
+| Egress — data cached after first pull | $45 | $0 (same-cloud) |
+| Egress — 20 runs, pulling from S3 each time | $900 | $0 (same-cloud) |
+| **Total — data cached** | **$1,064** | **$1,316** |
+| **Total — 20 runs uncached** | **$1,919** | **$1,316** |
+
+Bare metal wins by $252 if you pull data once and cache it on the provider. SageMaker wins by $603 if you run 20 experiments pulling fresh from S3 each time.
+
+Neither answer is universally correct. Both are calculable before you sign anything.
+
+---
+
 ## What This Changes
 
 None of these calculations require proprietary data. VRAM fit math uses published model specs and your training mode. Quantization requirements follow from the precision table. Multi-node thresholds follow from VRAM fit. Egress is dataset size times a published rate. TCO is four line items.
