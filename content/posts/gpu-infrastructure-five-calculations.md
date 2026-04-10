@@ -28,7 +28,9 @@ Before you compare GPU vendors, you need to know whether your model fits on the 
 | QLoRA (NF4 quantized base: 0.5 bytes/param + LoRA adapter + paged Adam overhead) | ~0.5 bytes base + ~5–15 GB adapter overhead |
 | BF16 inference (weights only, no optimizer) | 2 bytes |
 
-A 70B parameter model under full fine-tuning requires roughly 1.26 TB of VRAM. Under QLoRA, the NF4-quantized base model weighs about 35 GB, with LoRA adapter parameters and paged optimizer adding roughly 5–15 GB — total training state fits on a single A100 80GB node. That's not a rounding error. That's the difference between a multi-node cluster and a single node.
+A 70B parameter model under full fine-tuning requires roughly 1.26 TB of VRAM for the full training state. In practice, this is distributed across multiple GPUs using ZeRO-3 (DeepSpeed) or FSDP, which shard optimizer states and gradients across devices — a single GPU no longer holds the full 1.26 TB, but the aggregate VRAM requirement across the cluster is unchanged. The number still determines how many nodes you need; it's just not the per-GPU ceiling when you use modern sharding.
+
+Under QLoRA, the NF4-quantized base model weighs about 35 GB, with LoRA adapter parameters and paged optimizer adding roughly 5–15 GB. Real-world peak VRAM during training typically lands between 45–65 GB depending on LoRA rank and batch size — comfortably within a single A100 80GB node in most configurations. That's the difference between a multi-node cluster and a single node.
 
 **KV cache for inference** adds memory that scales with sequence length, not model size:
 
@@ -105,7 +107,7 @@ The formula is mechanical:
 monthly_egress_cost = dataset_size_GB × training_runs_per_month × egress_rate_per_GB
 ```
 
-AWS egress runs $0.09/GB (as of writing, first 10 TB/month). GCP and Azure are both around $0.08/GB. A 500 GB dataset running 20 training experiments per month at $0.09/GB is $900/month in egress alone — before you've paid for a single GPU-hour.
+AWS egress is tiered: first 100 GB/month free, then $0.09/GB up to 10 TB, dropping to $0.085/GB and lower at higher volumes. GCP and Azure are similar. For most teams running iterative training experiments, $0.09/GB is the operative rate. A 500 GB dataset running 20 training experiments per month is $900/month in egress — before a single GPU-hour. Teams that cache training data locally on the GPU provider after the first pull, or use a same-cloud provider, eliminate this cost entirely. The formula tells you whether it's worth solving.
 
 The egress number is exact arithmetic. Most infrastructure comparisons ignore it entirely.
 
