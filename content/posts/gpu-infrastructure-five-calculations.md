@@ -206,4 +206,4 @@ An H100 at $2.80/hr and an A100 at $1.60/hr aren't comparable until you know whe
 
 ---
 
-*I've been building tools for GPU infrastructure procurement — one of them runs these calculations against your actual workload and outputs a GPU recommendation with cost range and the reasoning behind the pick. If you're working through a procurement decision and want to see the live tool, I'm happy to show you. Reach out on [LinkedIn](https://www.linkedin.com/in/srikanthsamudrla/).*
+*I've been building GTM intelligence tools and built one specifically for GPU infrastructure vendors — it runs these calculations against your actual workload and outputs a recommendation with cost range and the reasoning behind the pick. If you want to see the live tool, I'm happy to show you. Reach out on [LinkedIn](https://www.linkedin.com/in/srikanthsamudrla/).*
