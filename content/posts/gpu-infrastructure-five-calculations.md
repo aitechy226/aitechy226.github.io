@@ -9,7 +9,7 @@ TocOpen: false
 draft: true
 ---
 
-I was building a GPU recommendation engine — a tool that maps workload descriptions to specific GPU configurations, primary recommendations, and cost ranges. To get the recommendations right, I had to formalize every constraint that determines whether a GPU deployment actually works.
+I was building a GPU recommendation engine — a tool that maps workload descriptions to specific GPU configurations, primary recommendations, and cost ranges. Getting the recommendations right took longer than I expected. I had to go deep on every constraint that determines whether a GPU deployment actually works.
 
 What I kept running into: $/hr is the number buyers ask about first, and it's the last calculation that matters. The configuration has to fit in VRAM, the training data has to be where the GPUs are, the interconnect has to support the parallelism strategy — and none of that shows up in a $/hr comparison. Here are the five calculations that come before it.
 
@@ -85,7 +85,7 @@ If your model requires cross-node tensor parallelism, InfiniBand isn't optional 
 
 The mechanism that synchronizes multi-GPU training is **NCCL** — NVIDIA Collective Communications Library. NCCL handles AllReduce operations: after each backward pass, every GPU has computed its local gradients, and NCCL aggregates them across all GPUs so each one updates with the full gradient. The abstraction is clean. The failure modes aren't.
 
-NCCL misconfiguration doesn't crash training. It silently degrades throughput — sometimes to 20% of expected performance — because the collective operations serialize where they should be parallel. The symptom looks like slow hardware. The cause is usually a wrong `NCCL_SOCKET_IFNAME` environment variable pointing at the management network instead of the high-speed fabric, or a topology that the auto-detection logic didn't handle correctly. If multi-node training is slower than single-node extrapolation would predict, check NCCL environment variables before blaming the hardware.
+NCCL misconfiguration doesn't crash training. It silently degrades throughput — sometimes to 20% of expected performance — because the collective operations serialize where they should be parallel. The symptom looks like slow hardware. From what I found in my research, the usual cause is a wrong `NCCL_SOCKET_IFNAME` environment variable pointing at the management network instead of the high-speed fabric, or a topology the auto-detection logic didn't handle correctly. If multi-node training is slower than single-node extrapolation would predict, NCCL environment variables are the first place to look.
 
 **What I'd want answered before signing a multi-node contract:**
 - GPUs per node, by GPU type
