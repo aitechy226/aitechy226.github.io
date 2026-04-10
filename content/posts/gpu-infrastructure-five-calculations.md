@@ -24,7 +24,7 @@ Before you compare GPU vendors, you need to know whether your model fits on the 
 | Mode | Bytes per parameter |
 |------|---------------------|
 | Full fine-tuning (mixed precision: BF16 compute + FP32 optimizer states, Adam) | 18 bytes |
-| LoRA (BF16 weights + low-rank adapter + optimizer) | 8 bytes |
+| LoRA (BF16 base frozen + adapter trained in BF16 + Adam optimizer) | 2 bytes base + ~6–12 GB adapter overhead |
 | QLoRA (NF4 quantized base: 0.5 bytes/param + LoRA adapter + paged Adam overhead) | ~0.5 bytes base + ~5–15 GB adapter overhead |
 | BF16 inference (weights only, no optimizer) | 2 bytes |
 
@@ -38,7 +38,7 @@ Under QLoRA, the NF4-quantized base model weighs about 35 GB, with LoRA adapter 
 KV cache = 2 × num_layers × num_kv_heads × head_dim × seq_len × 2 bytes
 ```
 
-Modern large models use Grouped Query Attention (GQA), where `num_kv_heads` is much smaller than the total attention head count — LLaMA-70B uses 8 KV heads vs. 64 query heads, reducing KV cache by 8×. For a 70B model at 8K context with 80 layers, 32 KV heads, and 128 head_dim, that's roughly 10 GB per sequence in flight.
+Modern large models use Grouped Query Attention (GQA), where `num_kv_heads` is much smaller than the total attention head count — LLaMA-70B uses 8 KV heads vs. 64 query heads, reducing KV cache by 8×. For a 70B model at 8K context with 80 layers, 8 KV heads, and 128 head_dim, that's roughly 2.5 GB per sequence in flight. At a batch of 10 concurrent requests, that's 25 GB of KV cache before a single weight is loaded.
 
 **Activations** assume gradient checkpointing. Without it, activation memory can exceed weight memory on long sequences.
 
@@ -140,7 +140,7 @@ gpu_hours = (6 × parameters × dataset_tokens × epochs) / gpu_flops
 
 This is derived from the standard estimate that training a transformer requires approximately 6 multiply-accumulate operations per parameter per token (forward pass + backward pass). GPU FLOPS are published in the vendor spec sheet — H100 SXM5 delivers 989 TFLOPS of BF16 tensor core throughput (dense; 1,979 TFLOPS with structured sparsity — vendors sometimes quote the sparsity figure, so verify which number you're comparing against). The math is exact. You hand it to your engineering team and they verify it against their own estimates.
 
-**Storage** is exact given a provider's storage rate. The gotcha is that many GPU infrastructure comparisons use compute rates from one provider and storage rates from another, or omit storage entirely. At 500 GB of training data plus checkpoints plus output artifacts, storage is not a rounding error.
+**Storage** is exact given a provider's storage rate. It's easy to compare compute rates from one provider against storage rates from another, or skip storage entirely. At 500 GB of training data plus checkpoints plus output artifacts, storage is not a rounding error.
 
 **Egress** is exactly the formula from the previous section. It's often the surprise line item — paid on every training run for the life of the contract if your data stays in the source cloud.
 
