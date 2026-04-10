@@ -87,7 +87,7 @@ The mechanism that synchronizes multi-GPU training is **NCCL** — NVIDIA Collec
 
 NCCL misconfiguration doesn't crash training. It silently degrades throughput — sometimes to 20% of expected performance — because the collective operations serialize where they should be parallel. The symptom looks like slow hardware. The cause is usually a wrong `NCCL_SOCKET_IFNAME` environment variable pointing at the management network instead of the high-speed fabric, or a topology that the auto-detection logic didn't handle correctly. If multi-node training is slower than single-node extrapolation would predict, check NCCL environment variables before blaming the hardware.
 
-**What I learned to ask providers before signing a multi-node contract:**
+**What I'd want answered before signing a multi-node contract:**
 - GPUs per node, by GPU type
 - Interconnect type and generation (InfiniBand HDR/NDR, or Ethernet)
 - Whether InfiniBand is enabled per-node or cluster-wide
