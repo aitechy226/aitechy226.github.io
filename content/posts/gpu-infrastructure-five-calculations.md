@@ -9,9 +9,9 @@ TocOpen: false
 draft: true
 ---
 
-Every GPU procurement conversation starts with $/hr. I've seen teams spend weeks on vendor comparisons built entirely around that one number — and then discover after the contract is signed that their model doesn't fit in the node's VRAM, their training data lives in a different cloud, and the InfiniBand they assumed exists doesn't.
+I was building a GPU recommendation engine — a tool that maps workload descriptions to specific GPU configurations, primary recommendations, and cost ranges. To get the recommendations right, I had to formalize every constraint that determines whether a GPU deployment actually works.
 
-$/hr is a real cost. It's also the last thing you should be calculating. Here are the five that come first.
+What I kept running into: $/hr is the number buyers ask about first, and it's the last calculation that matters. The configuration has to fit in VRAM, the training data has to be where the GPUs are, the interconnect has to support the parallelism strategy — and none of that shows up in a $/hr comparison. Here are the five calculations that come before it.
 
 ---
 
@@ -42,7 +42,7 @@ The `2` at the front is for K and V. The `2 bytes` at the end assumes BF16 stora
 
 **Activations** are estimated with gradient checkpointing assumed. With checkpointing enabled, you're trading GPU memory for recomputation — storing only a subset of intermediate activations and recomputing the rest on the backward pass. Without checkpointing, activation memory can exceed weight memory on long sequences.
 
-The VRAM calculation isn't hard math. It's knowing which formula applies to which mode. Teams skip this step, get a flashy $/hr number, and find out at job launch time.
+The VRAM calculation isn't hard math. It's knowing which formula applies to which mode. Skip it and the $/hr number becomes irrelevant at job launch time.
 
 ---
 
@@ -109,7 +109,7 @@ monthly_egress_cost = dataset_size_GB × training_runs_per_month × egress_rate_
 
 AWS egress is tiered: first 100 GB/month free, then $0.09/GB up to 10 TB, dropping to $0.085/GB and lower at higher volumes. GCP and Azure are similar. For most teams running iterative training experiments, $0.09/GB is the operative rate. A 500 GB dataset running 20 training experiments per month is $900/month in egress — before a single GPU-hour. Teams that cache training data locally on the GPU provider after the first pull, or use a same-cloud provider, eliminate this cost entirely. The formula tells you whether it's worth solving.
 
-The egress number is exact arithmetic. Most infrastructure comparisons ignore it entirely.
+The egress number is exact arithmetic. It was the last thing I added to the recommendation tool — and nearly the last thing I would have thought to include.
 
 Beyond egress cost, migration friction has a qualitative dimension. Not all cloud dependencies detach cleanly:
 
@@ -204,8 +204,6 @@ Neither answer is universally correct. Both are calculable before you sign anyth
 
 None of these calculations require proprietary data. VRAM fit math uses published model specs and your training mode. Quantization requirements follow from the precision table. Multi-node thresholds follow from VRAM fit. Egress is dataset size times a published rate. TCO is four line items.
 
-The reason most infrastructure decisions skip them isn't complexity — it's that vendor comparison tools are built around the one number vendors compete on: $/hr. The other four numbers are things you calculate yourself, and most buyers don't know they need to.
+Working through them to build the recommendation engine made clear why $/hr comparisons fall short — the number is real, but it doesn't carry information about whether the configuration works, what the data movement costs, or whether InfiniBand is available for the multi-node case. Once you have all five, the $/hr comparison is the easy part.
 
-An H100 at $2.80/hr and an A100 at $1.60/hr are not comparable numbers until you know whether your model fits in a single A100 node, what your training data egress looks like, and whether InfiniBand is available for the multi-node case. Once you know those things, the comparison is straightforward arithmetic.
-
-Do the five calculations first. The $/hr comparison is the easy part.
+An H100 at $2.80/hr and an A100 at $1.60/hr are not comparable until you know whether your model fits in a single A100 node, what your training data egress looks like, and whether InfiniBand is on the table. Those answers come from the five calculations. The price comparison comes after.
