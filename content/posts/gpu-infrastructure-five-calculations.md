@@ -203,3 +203,7 @@ Neither answer is universally correct. Both are calculable before you sign anyth
 Working through these to build the recommendation engine made clear why $/hr comparisons fall short — the number is real, but it doesn't carry information about whether the configuration works, what the data movement costs, or whether InfiniBand is available for the multi-node case.
 
 An H100 at $2.80/hr and an A100 at $1.60/hr aren't comparable until you know whether your model fits in a single A100 node, what egress looks like, and whether InfiniBand is on the table. Those answers come from the five calculations. The price comparison comes after.
+
+---
+
+*I've been building tools for GPU infrastructure procurement — one of them runs these calculations against your actual workload and outputs a GPU recommendation with cost range and the reasoning behind the pick. If you're working through a procurement decision and want to see the live tool, I'm happy to show you. Reach out on [LinkedIn](https://www.linkedin.com/in/srikanthsamudrla/).*
