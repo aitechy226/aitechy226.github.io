@@ -17,7 +17,7 @@ What I kept running into: $/hr is the number buyers ask about first, and it's th
 
 ## 1. VRAM Fit: The Hard Constraint Before Everything Else
 
-Before you compare GPU vendors, you need to know whether your model fits on the GPU at all. If VRAM is exhausted, training crashes — not degrades, crashes. The number you need is the full memory envelope: model weights plus optimizer state plus activations plus the KV cache for inference.
+The first thing I had to establish was whether the model fits on the GPU at all. If VRAM is exhausted, training crashes — not degrades, crashes. The full memory envelope is what matters: model weights plus optimizer state plus activations plus the KV cache for inference.
 
 **Model weights** are the baseline. The per-parameter byte cost depends entirely on your training mode:
 
@@ -59,9 +59,9 @@ Quantization isn't a fine-tuning detail. It's a hardware selection variable. The
 
 Going from FP32 to INT4 on a 70B model reduces the weight footprint by 8×. That's the difference between a four-card A100 configuration (4 × 80 GB = 320 GB total VRAM) and a single H100 (80 GB) — for the exact same model.
 
-The catch is precision loss. INT8 is generally safe for inference with minor accuracy degradation. INT4 (via GPTQ or GGUF) can introduce measurable accuracy loss on tasks that require numerical precision — financial calculations, structured output with tight constraints, legal reasoning where exact phrasing matters. For most inference workloads, INT8 is the right default. For training, the choice between FP32 and BF16 affects numerical stability — BF16 has the same exponent range as FP32, which is why it's the standard training dtype for large models.
+The catch is precision loss. INT8 is generally safe for inference with minor accuracy degradation. INT4 (via GPTQ or GGUF) can introduce measurable accuracy loss on tasks that require numerical precision — financial calculations, structured output with tight constraints, legal reasoning where exact phrasing matters. For most inference workloads, INT8 held up well in my testing. For training, BF16 is the standard — it has the same exponent range as FP32 without the memory cost.
 
-Quantization and hardware selection are the same decision — make them together.
+Quantization and hardware selection turned out to be the same decision.
 
 ---
 
@@ -87,7 +87,7 @@ The mechanism that synchronizes multi-GPU training is **NCCL** — NVIDIA Collec
 
 NCCL misconfiguration doesn't crash training. It silently degrades throughput — sometimes to 20% of expected performance — because the collective operations serialize where they should be parallel. The symptom looks like slow hardware. The cause is usually a wrong `NCCL_SOCKET_IFNAME` environment variable pointing at the management network instead of the high-speed fabric, or a topology that the auto-detection logic didn't handle correctly. If multi-node training is slower than single-node extrapolation would predict, check NCCL environment variables before blaming the hardware.
 
-**What you need from your provider before signing a multi-node contract:**
+**What I learned to ask providers before signing a multi-node contract:**
 - GPUs per node, by GPU type
 - Interconnect type and generation (InfiniBand HDR/NDR, or Ethernet)
 - Whether InfiniBand is enabled per-node or cluster-wide
@@ -105,7 +105,7 @@ The formula is mechanical:
 monthly_egress_cost = dataset_size_GB × training_runs_per_month × egress_rate_per_GB
 ```
 
-AWS egress is tiered: first 100 GB/month free, then $0.09/GB up to 10 TB, dropping to $0.085/GB and lower at higher volumes. GCP and Azure are similar. For most teams running iterative training experiments, $0.09/GB is the operative rate. A 500 GB dataset running 20 training experiments per month is $900/month in egress — before a single GPU-hour. Teams that cache training data locally on the GPU provider after the first pull, or use a same-cloud provider, eliminate this cost entirely. The formula tells you whether it's worth solving.
+AWS egress is tiered: first 100 GB/month free, then $0.09/GB up to 10 TB, dropping to $0.085/GB and lower at higher volumes. GCP and Azure are similar. For most teams running iterative training experiments, $0.09/GB is the operative rate. A 500 GB dataset running 20 training experiments per month is $900/month in egress — before a single GPU-hour. Caching training data locally on the GPU provider after the first pull, or using a same-cloud provider, eliminates this cost entirely. The formula tells you whether it's worth solving.
 
 The egress number is exact arithmetic. It was the last thing I added to the recommendation tool — and nearly the last thing I would have thought to include.
 
@@ -132,13 +132,13 @@ True total cost of ownership for GPU infrastructure is four numbers:
 | Egress | Exact — dataset size × runs × egress rate |
 | Managed services premium | Estimated — SageMaker carries roughly 30% overhead vs self-managed |
 
-**Compute** is the number everyone starts with. The right unit is GPU-hours, calculated from the training compute formula:
+**Compute** is the number everyone starts with. GPU-hours is the right unit — calculated from the training compute formula:
 
 ```
 gpu_hours = (6 × parameters × dataset_tokens × epochs) / gpu_flops
 ```
 
-This is derived from the standard estimate that training a transformer requires approximately 6 multiply-accumulate operations per parameter per token (forward pass + backward pass). GPU FLOPS are published in the vendor spec sheet — H100 SXM5 delivers 989 TFLOPS of BF16 tensor core throughput (dense; 1,979 TFLOPS with structured sparsity — vendors sometimes quote the sparsity figure, so verify which number you're comparing against). The math is exact. You hand it to your engineering team and they verify it against their own estimates.
+This is derived from the standard estimate that training a transformer requires approximately 6 multiply-accumulate operations per parameter per token (forward pass + backward pass). GPU FLOPS are published in the vendor spec sheet — H100 SXM5 delivers 989 TFLOPS of BF16 tensor core throughput (dense; 1,979 TFLOPS with structured sparsity — vendors sometimes quote the sparsity figure, so verify which number you're comparing against). The math is exact — verifiable against your engineering team's own estimates.
 
 **Storage** is exact given a provider's storage rate. It's easy to compare compute rates from one provider against storage rates from another, or skip storage entirely. At 500 GB of training data plus checkpoints plus output artifacts, storage is not a rounding error.
 
