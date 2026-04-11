@@ -1,17 +1,17 @@
 ---
 title: "GPU Infrastructure: The Five Calculations That Actually Matter"
 date: 2026-04-10
-description: "$/hr is one number. Here are the five calculations that determine whether your GPU deployment actually works — VRAM fit, quantization impact, multi-node thresholds, egress cost, and real TCO."
+description: "VRAM fit, quantization impact, multi-node thresholds, egress cost, and real TCO — the five calculations that determine whether a GPU deployment actually works."
 tags: ["gpu", "infrastructure", "llm", "mlops", "distributed-training", "tco", "quantization"]
 author: "Srikanth Samudrla"
 showToc: true
 TocOpen: false
-draft: true
+draft: false
 ---
 
-I was building a GPU recommendation engine — a tool that maps workload descriptions to specific GPU configurations, primary recommendations, and cost ranges. Getting the recommendations right took longer than I expected. I had to go deep on every constraint that determines whether a GPU deployment actually works.
+I was building a GPU recommendation engine — one that maps workload descriptions to specific configurations, primary recommendations, and cost ranges — and kept hitting the same wall: getting the recommendations right meant going deep on every constraint that determines whether a deployment actually works. Not whether it's affordable. Whether it works at all.
 
-What I kept running into: $/hr is the number buyers ask about first, and it's the last calculation that matters. The configuration has to fit in VRAM, the training data has to be where the GPUs are, the interconnect has to support the parallelism strategy — and none of that shows up in a $/hr comparison. Here are the five calculations that come before it.
+VRAM has to fit the full training state, not just the model weights. Training data has to be where the GPUs are. The interconnect has to support the parallelism strategy. None of that shows up in a $/hr comparison. Here are the five calculations that come before it.
 
 ---
 
@@ -59,7 +59,7 @@ Quantization isn't a fine-tuning detail. It's a hardware selection variable. The
 
 Going from FP32 to INT4 on a 70B model reduces the weight footprint by 8×. That's the difference between a four-card A100 configuration (4 × 80 GB = 320 GB total VRAM) and a single H100 (80 GB) — for the exact same model.
 
-The catch is precision loss. INT8 is generally safe for inference with minor accuracy degradation. INT4 (via GPTQ or GGUF) can introduce measurable accuracy loss on tasks that require numerical precision — financial calculations, structured output with tight constraints, legal reasoning where exact phrasing matters. For most inference workloads, INT8 held up well in my testing. For training, BF16 is the standard — it has the same exponent range as FP32 without the memory cost.
+The catch is precision loss. INT4 (via GPTQ or GGUF) can introduce measurable accuracy loss on tasks that require numerical precision — financial calculations, structured output with tight constraints, legal reasoning where exact phrasing matters. From what I found in my research, INT8 generally holds up well for inference with minor accuracy degradation. For training, BF16 is the standard — it has the same exponent range as FP32 without the memory cost.
 
 Quantization and hardware selection turned out to be the same decision.
 
@@ -79,7 +79,7 @@ But that calculation only tells you how many nodes — not whether they can comm
 
 **Inside a single node**, GPUs communicate over NVLink — NVIDIA's proprietary interconnect running at 900 GB/s on H100 NVLink 4.0 (600 GB/s on A100 NVLink 3.0). Tensor parallelism (splitting a single layer across multiple GPUs) is viable at this bandwidth. You can shard individual weight matrices horizontally across GPUs and the synchronization cost is low enough to be worth it.
 
-**Across nodes**, the story changes. You're on InfiniBand or Ethernet. InfiniBand HDR gives you about 200 Gb/s (25 GB/s) per port — two orders of magnitude slower than NVLink. At this bandwidth, tensor parallelism across nodes is usually a net loss. The synchronization overhead exceeds the compute benefit. You switch to pipeline parallelism instead — each node holds complete model layers, and the forward pass flows through nodes sequentially.
+**Across nodes**, the story changes. You're on InfiniBand or Ethernet. InfiniBand HDR gives you about 200 Gb/s (25 GB/s) per port — more than an order of magnitude slower than NVLink. At this bandwidth, tensor parallelism across nodes is usually a net loss. The synchronization overhead exceeds the compute benefit. You switch to pipeline parallelism instead — each node holds complete model layers, and the forward pass flows through nodes sequentially.
 
 If your model requires cross-node tensor parallelism, InfiniBand isn't optional — it's a correctness requirement, not a performance preference.
 
@@ -105,7 +105,7 @@ The formula is mechanical:
 monthly_egress_cost = dataset_size_GB × training_runs_per_month × egress_rate_per_GB
 ```
 
-AWS egress is tiered: first 100 GB/month free, then $0.09/GB up to 10 TB, dropping to $0.085/GB and lower at higher volumes. GCP and Azure are similar. For most teams running iterative training experiments, $0.09/GB is the operative rate. A 500 GB dataset running 20 training experiments per month is $900/month in egress — before a single GPU-hour. Caching training data locally on the GPU provider after the first pull, or using a same-cloud provider, eliminates this cost entirely. The formula tells you whether it's worth solving.
+AWS egress is tiered: first 100 GB/month free, then $0.09/GB up to 10 TB, dropping to $0.085/GB and lower at higher volumes. GCP and Azure are similar. In practice, $0.09/GB is the operative rate for iterative training experiments. A 500 GB dataset running 20 training experiments per month is $900/month in egress — before a single GPU-hour. Caching training data locally on the GPU provider after the first pull, or using a same-cloud provider, eliminates this cost entirely. The formula tells you whether it's worth solving.
 
 The egress number is exact arithmetic. It was the last thing I added to the recommendation tool — and nearly the last thing I would have thought to include.
 
@@ -202,8 +202,10 @@ Neither answer is universally correct. Both are calculable before you sign anyth
 
 Working through these to build the recommendation engine made clear why $/hr comparisons fall short — the number is real, but it doesn't carry information about whether the configuration works, what the data movement costs, or whether InfiniBand is available for the multi-node case.
 
-An H100 at $2.80/hr and an A100 at $1.60/hr aren't comparable until you know whether your model fits in a single A100 node, what egress looks like, and whether InfiniBand is on the table. Those answers come from the five calculations. The price comparison comes after.
+Before I could compare an H100 at $2.80/hr against an A100 at $1.60/hr, I needed to know whether my model fit in a single A100 node, what egress looked like, and whether InfiniBand was available. That's what these five calculations gave me.
+
+**These calculations tell you whether a configuration works. They don't tell you which configurations to put on the table in the first place — that's the problem I built the tool to solve.**
 
 ---
 
-*I'm building GTM intelligence tools and built a GPU Advisor — one that runs these calculations against your actual workload profile and generates a report with actionable recommendations. Happy to show you a live demo. Reach out on [LinkedIn](https://www.linkedin.com/in/srikanthsamudrla/).*
+*I've been building GTM intelligence tools — the GPU Advisor is one of them. It runs these calculations against your actual workload profile and generates a report with actionable recommendations. Happy to show you a live demo. Reach out on [LinkedIn](https://www.linkedin.com/in/srikanthsamudrla/).*

@@ -9,6 +9,14 @@ This site is about building AI systems that actually work in production — not 
 
 ---
 
+## On GPU Infrastructure
+
+GPU infrastructure decisions look like price comparisons. They're not — they're configuration problems, data placement problems, and interconnect problems that $/hr doesn't capture.
+
+- [GPU Infrastructure: The Five Calculations That Actually Matter](/posts/gpu-infrastructure-five-calculations/) {{< new "2026-04-10" >}} — A framework built while building a GPU recommendation engine, with a full worked example on a 70B fine-tuning scenario.
+
+---
+
 ## On Enterprise RAG
 
 What it takes to build a RAG system a compliance officer or clinical analyst can actually rely on — deterministic retrieval, evidence gating, and the gap between working and trustworthy.
