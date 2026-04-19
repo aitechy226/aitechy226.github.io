@@ -208,4 +208,4 @@ Before I could compare an H100 at $2.80/hr against an A100 at $1.60/hr, I needed
 
 ---
 
-*I've been building GTM intelligence tools — the GPU Advisor is one of them. It runs these calculations against your actual workload profile and generates a report with actionable recommendations. Happy to show you a live demo. Reach out on [LinkedIn](https://www.linkedin.com/in/srikanthsamudrla/).*
+*I've been building GTM intelligence tools — GPU Navigator™ is one of them. It runs these calculations against your actual workload profile and generates a report with actionable recommendations. Happy to show you a live demo. Reach out on [LinkedIn](https://www.linkedin.com/in/srikanthsamudrla/).*
