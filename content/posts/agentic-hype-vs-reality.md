@@ -1,7 +1,7 @@
 ---
 title: "Why Your AI Agent Demo Looks Great and Your Production System Doesn't"
 date: 2026-03-31
-description: "A practitioner's take on the gap between agentic hype and agentic reality."
+description: "Why ReAct agents struggle in production, why deterministic orchestration (LangGraph, Temporal) is the pattern that ships in regulated workflows (KYC, lending), and why the auditability argument outlives model improvements."
 tags: ["agents", "agentic-ai", "production", "architecture", "llm", "langgraph"]
 author: "Srikanth Samudrla"
 showToc: true
