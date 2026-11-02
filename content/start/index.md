@@ -13,6 +13,8 @@ This site is about building AI systems that actually work in production — not 
 
 GPU infrastructure decisions look like price comparisons. They're not — they're configuration problems, data placement problems, and interconnect problems that $/hr doesn't capture.
 
+- [Cost-Per-Token: The Physics Behind the Number](/posts/cost-per-token-physics/) {{< new "2026-11-01" >}} — Why a cost-per-token figure means little until you know its context length, batch size and attention type, worked through on a 70B model.
+
 - [Beyond GPUDirect: Moving Storage Control to the GPU](/posts/scada-cufile-storage-control-path/) {{< new "2026-08-10" >}} — GPU-initiated storage, explained: what GPUDirect already fixed, what SCADA moves onto the GPU, and why the drives have to change too.
 
 - [GPU Infrastructure: The Five Calculations That Actually Matter](/posts/gpu-infrastructure-five-calculations/) {{< new "2026-04-10" >}} — A framework built while building a GPU recommendation engine, with a full worked example on a 70B fine-tuning scenario.
